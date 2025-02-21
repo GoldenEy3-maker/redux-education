@@ -1,0 +1,47 @@
+# Системные файлы
+.DS_Store
+.git
+.gitignore
+.env
+.env.*
+
+# Зависимости и пакеты
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Файлы сборки и кэша
+dist/
+build/
+.next/
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# IDE и редакторы
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*.bak
+
+# Тесты и документация
+__tests__/
+test/
+tests/
+docs/
+*.md
+README.md
+
+# Временные файлы
+tmp/
+temp/
+*.tmp
+
+# Другие файлы проекта
+Dockerfile
+docker-compose.yml
+.dockerignore
