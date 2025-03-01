@@ -9,16 +9,22 @@ import {
 } from "@/shared/ui/card";
 import Image from "next/image";
 import { Heart, Share2, ShoppingCart } from "lucide-react";
-import { Badge } from "@/shared/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/shared/ui/tooltip";
-import Link from "next/link";
+import { Product } from "../model/types";
+import { ProductLabel } from "./product-label";
+import { ProductCompositionBadge } from "./product-composition-badge";
+import { formatPrice } from "@/shared/lib/format-price";
 
-export function ProductCard() {
+type ProductCardProps = {} & Product;
+
+export function ProductCard({
+  id,
+  img,
+  price,
+  title,
+  composition,
+  description,
+  labels,
+}: ProductCardProps) {
   return (
     <Card className="relative overflow-hidden pt-0">
       <div className="absolute inset-x-3 top-3 z-10 flex justify-between">
@@ -30,59 +36,45 @@ export function ProductCard() {
         </Button>
       </div>
       <CardHeader className="bg-secondary/40 p-4">
-        <div className="relative h-80">
+        <div className="relative flex h-80 flex-col">
           <Image
-            src="/img/product-1.webp"
+            src={img}
             alt="Фото товара"
             fill
-            objectFit="cover"
+            className="object-cover"
+            priority
+            sizes="(min-width: 768px) 30vw, 50vw"
           />
+          {composition ? (
+            <div className="relative z-10 mt-auto flex flex-wrap items-center gap-2">
+              {composition.map((value, index) => (
+                <ProductCompositionBadge key={index}>
+                  {value}
+                </ProductCompositionBadge>
+              ))}
+            </div>
+          ) : null}
         </div>
       </CardHeader>
       <CardContent>
-        <div className="mb-2 flex flex-wrap items-center gap-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Badge>+70 бонусов</Badge>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-64 text-base">
-                <p>
-                  При покупке на сайте воды «Легенда жизни» с цинком и селеном,
-                  19л. Вам начисляться 70 бонусов.{" "}
-                  <Link className="font-medium" href="#">
-                    Подробнее
-                  </Link>
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <Badge>Новинка</Badge>
-          <Badge>Акция</Badge>
-        </div>
-        <CardTitle className="mb-1 text-2xl">Вода 19л</CardTitle>
-        <CardDescription className="text-xl text-pretty">
-          Вода "Легенда жизни" 19л с цинком и селеном
-        </CardDescription>
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          <Badge variant="outline" className="text-base">
-            Цинк
-          </Badge>
-          <Badge variant="outline" className="text-base">
-            Селен
-          </Badge>
-        </div>
+        {labels ? (
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            {labels.map((label) => (
+              <ProductLabel key={label.value} {...label} />
+            ))}
+          </div>
+        ) : null}
+        <CardTitle className="mb-1 text-2xl">{title}</CardTitle>
+        {description ? (
+          <CardDescription className="text-xl text-pretty">
+            {description}
+          </CardDescription>
+        ) : null}
       </CardContent>
       <CardFooter className="mt-auto items-end justify-between">
         <div className="flex flex-col">
           <span className="text-sm leading-none">Цена:</span>
-          <b className="text-2xl">
-            {new Intl.NumberFormat("ru-RU", {
-              style: "currency",
-              currency: "RUB",
-              maximumFractionDigits: 0,
-            }).format(200)}
-          </b>
+          <b className="text-2xl">{formatPrice(price)}</b>
         </div>
         <Button size="lg" className="min-w-40 text-base">
           <ShoppingCart className="size-5" />
