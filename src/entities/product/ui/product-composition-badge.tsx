@@ -8,7 +8,7 @@ export function ProductCompositionBadge({
   return (
     <Badge
       variant="outline"
-      className="bg-secondary/40 text-sm backdrop-blur-sm"
+      className="bg-secondary/40 change-theme-transition text-sm backdrop-blur-sm"
     >
       {children}
     </Badge>

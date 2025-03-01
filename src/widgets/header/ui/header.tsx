@@ -1,15 +1,15 @@
-"use client";
-
-import { selectCount } from "@/features/counter";
-import { useAppSelector } from "@/shared/lib/store-hooks";
+import { ThemeToggle } from "@/features/theming";
+import { Droplets } from "lucide-react";
+import Link from "next/link";
 
 export function Header() {
-  const count = useAppSelector(selectCount);
-
   return (
-    <header className="container py-2 mx-auto px-4">
-      <h3>Untitled UI</h3>
-      <span>counter value: {count}</span>
+    <header className="container mx-auto flex items-center justify-between px-4 py-5">
+      <Link href="/" className="flex items-center gap-2">
+        <Droplets />
+        <h3 className="text-xl">Droplets</h3>
+      </Link>
+      <ThemeToggle />
     </header>
   );
 }

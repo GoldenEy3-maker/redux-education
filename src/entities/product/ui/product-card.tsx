@@ -13,6 +13,7 @@ import { Product } from "../model/types";
 import { ProductLabel } from "./product-label";
 import { ProductCompositionBadge } from "./product-composition-badge";
 import { formatPrice } from "@/shared/lib/format-price";
+import { DotPattern } from "@/shared/magicui/dot-pattern";
 
 type ProductCardProps = {} & Product;
 
@@ -27,7 +28,7 @@ export function ProductCard({
 }: ProductCardProps) {
   return (
     <Card className="relative overflow-hidden pt-0">
-      <div className="absolute inset-x-3 top-3 z-10 flex justify-between">
+      <div className="absolute inset-x-4 top-3 z-10 flex justify-between">
         <Button variant="ghost">
           <Share2 className="size-5" />
         </Button>
@@ -35,8 +36,9 @@ export function ProductCard({
           <Heart className="size-5" />
         </Button>
       </div>
-      <CardHeader className="bg-secondary/40 p-4">
-        <div className="relative flex h-80 flex-col">
+      <CardHeader className="bg-secondary/40 change-theme-transition py-4">
+        <div className="relative flex h-80 flex-col justify-center overflow-hidden">
+          <DotPattern className="[mask-image:radial-gradient(200px_circle_at_center,white,transparent)]" />
           <Image
             src={img}
             alt="Фото товара"
@@ -77,7 +79,7 @@ export function ProductCard({
           <b className="text-2xl">{formatPrice(price)}</b>
         </div>
         <Button size="lg" className="min-w-40 text-base">
-          <ShoppingCart className="size-5" />
+          <ShoppingCart />
           <span>В корзину</span>
         </Button>
       </CardFooter>

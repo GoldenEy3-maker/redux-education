@@ -4,12 +4,7 @@ import { StoreProvider } from "./store";
 export function Providers({ children }: React.PropsWithChildren) {
   return (
     <StoreProvider>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         {children}
       </ThemeProvider>
     </StoreProvider>

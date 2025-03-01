@@ -121,6 +121,12 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground change-theme-transition;
   }
+}
+
+@utility change-theme-transition {
+  transition:
+    background-color 300ms ease,
+    border 300ms ease;
 }
