@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/shared/ui/card";
 import Image from "next/image";
-import { Heart, Share2, ShoppingCart } from "lucide-react";
+import { Heart, Share2, ShoppingBag, ShoppingCart } from "lucide-react";
 import { Product } from "../model/types";
 import { ProductLabel } from "./product-label";
 import { ProductCompositionBadge } from "./product-composition-badge";
@@ -59,28 +59,28 @@ export function ProductCard({
         </div>
       </CardHeader>
       <CardContent>
-        {labels ? (
-          <div className="mb-2 flex flex-wrap items-center gap-2">
-            {labels.map((label) => (
-              <ProductLabel key={label.value} {...label} />
-            ))}
-          </div>
-        ) : null}
-        <CardTitle className="mb-1 text-2xl">{title}</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="mb-2 text-3xl">{formatPrice(price)}</CardTitle>
+          {labels ? (
+            <div className="mb-1 flex flex-wrap items-center gap-2">
+              {labels.map((label) => (
+                <ProductLabel key={label.value} {...label} />
+              ))}
+            </div>
+          ) : null}
+        </div>
         {description ? (
-          <CardDescription className="text-xl text-pretty">
+          <CardDescription className="text-lg text-pretty">
             {description}
           </CardDescription>
         ) : null}
       </CardContent>
-      <CardFooter className="mt-auto items-end justify-between">
-        <div className="flex flex-col">
-          <span className="text-sm leading-none">Цена:</span>
-          <b className="text-2xl">{formatPrice(price)}</b>
-        </div>
-        <Button size="lg" className="min-w-40 text-base">
+      <CardFooter className="mt-auto items-center justify-between gap-4">
+        <Button variant="ghost">
           <ShoppingCart />
-          <span>В корзину</span>
+        </Button>
+        <Button className="min-w-40 text-base">
+          <span>В один клик</span>
         </Button>
       </CardFooter>
     </Card>
