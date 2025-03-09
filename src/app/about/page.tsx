@@ -1,13 +1,7 @@
 "use client";
 
 import { useGetPostsQuery } from "@/entities/posts";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardFooter,
-} from "@/shared/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
 
 export default function AboutPage() {
   const { data, isLoading } = useGetPostsQuery();

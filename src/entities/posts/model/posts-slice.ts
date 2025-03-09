@@ -37,6 +37,7 @@ export const postsApiSlice = apiSlice.injectEndpoints({
         try {
           await queryFulfilled;
         } catch (error) {
+          console.error(error);
           getPostsPatchResult.undo();
         }
       },
@@ -57,6 +58,7 @@ export const postsApiSlice = apiSlice.injectEndpoints({
         try {
           await queryFulfilled;
         } catch (error) {
+          console.error(error);
           getPostsPatchResult.undo();
         }
       },
