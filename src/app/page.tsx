@@ -1,11 +1,10 @@
 "use client";
 
 import {
-  selectPosts,
   useAddNewPostMutation,
+  useDeletePostMutation,
   useGetPostsQuery,
 } from "@/entities/posts";
-import { useAppDispatch, useAppSelector } from "@/shared/lib/store-hooks";
 import { Button } from "@/shared/ui/button";
 import {
   Card,
@@ -15,7 +14,7 @@ import {
   CardTitle,
 } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Home() {
   const [title, setTitle] = useState("");
@@ -23,7 +22,7 @@ export default function Home() {
 
   const { data, isLoading } = useGetPostsQuery();
   const [addNewPost, { isLoading: isAddingNewPost }] = useAddNewPostMutation();
-  // const posts = useAppSelector(selectPosts);
+  const [deletePost, { isLoading: isDeletingPost }] = useDeletePostMutation();
 
   async function handleNewPostSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -58,21 +57,21 @@ export default function Home() {
       </form>
       {!isLoading && data ? (
         <div className="grid grid-cols-4 gap-4">
-          {data.map((post) => (
-            <Card key={post.id}>
+          {data.ids.map((postId) => (
+            <Card key={postId}>
               <CardHeader>
-                <CardTitle>{post.title}</CardTitle>
-                <CardDescription>{post.body}</CardDescription>
+                <CardTitle>{data.entities[postId].title}</CardTitle>
+                <CardDescription>{data.entities[postId].body}</CardDescription>
               </CardHeader>
-              {/* <CardFooter>
+              <CardFooter>
                 <Button
                   variant="destructive"
-                  disabled={isDeleingNewPost}
-                  onClick={() => dispatch(deletePost(post.id))}
+                  disabled={isDeletingPost}
+                  onClick={() => deletePost(data.entities[postId].id)}
                 >
                   Удалить
                 </Button>
-              </CardFooter> */}
+              </CardFooter>
             </Card>
           ))}
         </div>

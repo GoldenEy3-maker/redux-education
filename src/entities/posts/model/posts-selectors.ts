@@ -1,9 +1,12 @@
 import { createSelector } from "@reduxjs/toolkit";
-import { postsApiSlice } from "./posts-slice";
+import { initialState, postsAdapter, postsApiSlice } from "./posts-slice";
 
-export const selectPostsResult = postsApiSlice.endpoints.getPosts.select();
+const selectPostsResult = postsApiSlice.endpoints.getPosts.select();
 
-export const selectPosts = createSelector(
+const selectPostsData = createSelector(
   selectPostsResult,
-  (postsResult) => postsResult?.data || [],
+  (result) => result.data ?? initialState,
 );
+
+export const { selectAll: selectPosts } =
+  postsAdapter.getSelectors(selectPostsData);

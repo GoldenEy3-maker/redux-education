@@ -9,6 +9,9 @@ export function Header() {
         <Droplets />
         <h3 className="text-xl">Droplets</h3>
       </Link>
+      <nav>
+        <Link href="/about">About</Link>
+      </nav>
       <ThemeToggle />
     </header>
   );
