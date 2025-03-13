@@ -6,7 +6,11 @@ export function configureAppStore() {
   const store = configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().prepend().concat(apiSlice.middleware),
+      getDefaultMiddleware({
+        serializableCheck: false,
+      })
+        .prepend()
+        .concat(apiSlice.middleware),
   });
 
   return store;
