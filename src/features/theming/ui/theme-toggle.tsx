@@ -9,7 +9,7 @@ import { Moon, Sun } from "lucide-react";
 
 export function ThemeToggle() {
   const [isShow, setIsShow] = useState(false);
-  const { setTheme, theme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
 
   useEffect(() => {
     setIsShow(true);
@@ -22,10 +22,10 @@ export function ThemeToggle() {
           <Switch
             id="theme-toggle"
             className="h-6 w-10 [&_[data-slot='switch-thumb']]:size-5"
-            checked={theme === "dark"}
+            checked={resolvedTheme === "dark"}
             onCheckedChange={(value) => setTheme(value ? "dark" : "light")}
             thumbSlot={
-              theme === "dark" ? (
+              resolvedTheme === "dark" ? (
                 <Moon className="size-3" />
               ) : (
                 <Sun className="size-3" />

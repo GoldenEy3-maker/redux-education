@@ -1,7 +1,8 @@
 import { relations } from "drizzle-orm";
 import { pgTable as table } from "drizzle-orm/pg-core";
 import * as t from "drizzle-orm/pg-core";
-import { usersToTeams } from "./usersToTeams";
+import { usersToTeams } from "./users-to-teams";
+import { teams } from "./teams";
 
 export const users = table(
   "users",
@@ -19,6 +20,6 @@ export const users = table(
   ],
 );
 
-export const usersRelations = relations(users, ({ many }) => ({
-  usersToTeams: many(usersToTeams),
+export const usersRelations = relations(users, ({ many, one }) => ({
+  teams: many(usersToTeams),
 }));

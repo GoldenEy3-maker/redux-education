@@ -7,20 +7,14 @@ import { relations } from "drizzle-orm";
 export const usersToTeams = table(
   "users_to_teams",
   {
-    userId: t
-      .integer("user_id")
-      .notNull()
-      .references(() => users.id),
-    teamId: t
-      .integer("team_id")
-      .notNull()
-      .references(() => teams.id),
+    userId: t.integer("user_id").notNull(),
+    teamId: t.integer("team_id").notNull(),
   },
   (table) => [t.primaryKey({ columns: [table.userId, table.teamId] })],
 );
 
 export const usersToTeamsRelations = relations(usersToTeams, ({ one }) => ({
-  group: one(teams, {
+  team: one(teams, {
     fields: [usersToTeams.teamId],
     references: [teams.id],
   }),
