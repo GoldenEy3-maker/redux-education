@@ -1,12 +1,6 @@
 import { apiSlice } from "@/shared/api/api-slice";
-import { createEntityAdapter } from "@reduxjs/toolkit";
-import { EntityTask, NewTask, Task, TaskId } from "./types";
-
-export const tasksAdapter = createEntityAdapter<Task>({
-  sortComparer: (a, b) => {
-    return b.createdAt.getTime() - a.createdAt.getTime();
-  },
-});
+import { EntityTask, NewTask, Task, TaskId } from "../model/types";
+import { tasksAdapter } from "../config/adapter";
 
 export const initialState = tasksAdapter.getInitialState();
 

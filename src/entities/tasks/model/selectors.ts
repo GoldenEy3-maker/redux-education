@@ -1,5 +1,6 @@
 import { createSelector } from "@reduxjs/toolkit";
-import { initialState, tasksAdapter, tasksApiSlice } from "./tasks-slice";
+import { initialState, tasksApiSlice } from "../api/api-slice";
+import { tasksAdapter } from "../config/adapter";
 
 const selectTasksResult = tasksApiSlice.endpoints.getTasks.select();
 

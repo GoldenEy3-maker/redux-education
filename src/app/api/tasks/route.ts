@@ -2,9 +2,16 @@ import { NewTask } from "@/entities/tasks";
 import { db } from "@/shared/db";
 import { tasks } from "@/shared/db/schema";
 import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
 import { NextRequest } from "next/server";
 
 export async function GET() {
+  const headersList = await headers();
+  const token = headersList.get("Authorization");
+  if (!token)
+    return new Response("Unauthorized", {
+      status: 401,
+    });
   const tasks = await db.query.tasks.findMany();
   return Response.json(tasks);
 }

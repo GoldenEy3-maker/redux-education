@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Header } from "@/widgets/header";
 import { Providers } from "./providers";
 import { cn } from "@/shared/lib/utils";
 
@@ -28,10 +27,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <Providers>
-          <div className="flex min-h-svh flex-col">
-            <Header />
-            {children}
-          </div>
+          <div className="flex min-h-svh flex-col">{children}</div>
         </Providers>
       </body>
     </html>
