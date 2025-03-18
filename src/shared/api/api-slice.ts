@@ -4,7 +4,7 @@ import {
   FetchArgs,
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
-import { authSchema, clear, setToken } from "../model/auth-slice";
+import { authSchema, logOut, setCredentials } from "../model/auth-slice";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "/api",
@@ -35,15 +35,15 @@ async function baseQueryWithAuth(
 
     if (refreshResult.data) {
       try {
-        const { token } = authSchema.parse({ token: refreshResult.data });
-        api.dispatch(setToken(token));
+        const { token, user } = authSchema.parse(refreshResult.data);
+        api.dispatch(setCredentials({ token, user }));
         result = await baseQuery(args, api, extraOptions);
       } catch (error) {
         console.error(error);
-        api.dispatch(clear());
+        api.dispatch(logOut());
       }
     } else {
-      api.dispatch(clear());
+      api.dispatch(logOut());
     }
   }
 
@@ -53,6 +53,6 @@ async function baseQueryWithAuth(
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithAuth,
-  tagTypes: ["Task"],
+  tagTypes: ["Task", "Project", "Team", "User"],
   endpoints: () => ({}),
 });
