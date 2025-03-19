@@ -1,6 +1,7 @@
 import { Action, configureStore, ThunkAction } from "@reduxjs/toolkit";
 import { rootReducer } from "./reducers";
 import { apiSlice } from "../../shared/api/api-slice";
+import { setupListeners } from "@reduxjs/toolkit/query";
 
 export function configureAppStore() {
   const store = configureStore({
@@ -12,6 +13,8 @@ export function configureAppStore() {
         .prepend()
         .concat(apiSlice.middleware),
   });
+
+  setupListeners(store.dispatch);
 
   return store;
 }

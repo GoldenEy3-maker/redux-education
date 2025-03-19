@@ -18,6 +18,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const body = (await request.json()) as NewTask;
+  await new Promise((resolve) => setTimeout(resolve, 1000));
   const task = await db.insert(tasks).values(body).returning();
   return Response.json(task);
 }

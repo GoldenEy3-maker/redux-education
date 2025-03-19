@@ -1,3 +1,5 @@
+"use client";
+
 import type { Session } from "./types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { z } from "zod";
@@ -22,6 +24,9 @@ export const authSlice = createSlice({
       state.token = action.payload.token;
       state.user = action.payload.user;
     },
+    setToken: (state, action: PayloadAction<string | null>) => {
+      state.token = action.payload;
+    },
     logOut: (state) => {
       state.user = null;
       state.token = null;
@@ -29,4 +34,4 @@ export const authSlice = createSlice({
   },
 });
 
-export const { logOut, setCredentials } = authSlice.actions;
+export const { logOut, setCredentials, setToken } = authSlice.actions;

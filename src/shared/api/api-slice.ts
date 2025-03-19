@@ -1,10 +1,13 @@
+"use client";
+
 import {
   BaseQueryApi,
   createApi,
   FetchArgs,
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
-import { authSchema, logOut, setCredentials } from "../model/auth-slice";
+import { authSchema, logOut, setToken } from "@/features/auth/model/slice";
+import { ApiTagsMap } from "../constants/api-tags";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "/api",
@@ -35,8 +38,8 @@ async function baseQueryWithAuth(
 
     if (refreshResult.data) {
       try {
-        const { token, user } = authSchema.parse(refreshResult.data);
-        api.dispatch(setCredentials({ token, user }));
+        const { token } = authSchema.parse(refreshResult.data);
+        api.dispatch(setToken(token));
         result = await baseQuery(args, api, extraOptions);
       } catch (error) {
         console.error(error);
@@ -53,6 +56,6 @@ async function baseQueryWithAuth(
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithAuth,
-  tagTypes: ["Task", "Project", "Team", "User"],
+  tagTypes: Object.values(ApiTagsMap),
   endpoints: () => ({}),
 });
