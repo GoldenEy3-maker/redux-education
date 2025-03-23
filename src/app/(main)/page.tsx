@@ -28,7 +28,7 @@ export default function Home() {
     event.preventDefault();
 
     try {
-      await addTask({ text: body, title });
+      await addTask({ description: body, title, projectId: "1" });
       setTitle("");
       setBody("");
     } catch (error) {
@@ -61,7 +61,9 @@ export default function Home() {
             <Card key={taskId}>
               <CardHeader>
                 <CardTitle>{data.entities[taskId].title}</CardTitle>
-                <CardDescription>{data.entities[taskId].text}</CardDescription>
+                <CardDescription>
+                  {data.entities[taskId].description}
+                </CardDescription>
               </CardHeader>
               <CardFooter>
                 <Button

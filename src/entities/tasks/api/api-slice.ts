@@ -10,14 +10,7 @@ export const tasksApiSlice = apiSlice.injectEndpoints({
       query: () => "/tasks",
       providesTags: ["Task"],
       transformResponse: (res: Task[]) => {
-        return tasksAdapter.setAll(
-          initialState,
-          res.map((task) => ({
-            ...task,
-            createdAt: new Date(task.createdAt),
-            updatedAt: task.updatedAt ? new Date(task.updatedAt) : null,
-          })),
-        );
+        return tasksAdapter.setAll(initialState, res);
       },
     }),
     addTask: builder.mutation<Task, NewTask>({
@@ -30,7 +23,7 @@ export const tasksApiSlice = apiSlice.injectEndpoints({
       onQueryStarted: async (newTask, { dispatch, queryFulfilled }) => {
         const getTasksPatchResult = dispatch(
           tasksApiSlice.util.updateQueryData("getTasks", undefined, (draft) => {
-            const newId = Date.now();
+            const newId = crypto.randomUUID();
             const newTaskWithId = {
               ...newTask,
               id: newId,

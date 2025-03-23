@@ -1,5 +1,3 @@
-"use client";
-
 import type { Session } from "./types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { z } from "zod";

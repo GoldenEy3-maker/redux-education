@@ -1,8 +1,7 @@
-import { tasks } from "@/shared/db/schema/tasks";
+import { Task as DBTask } from "@prisma/client";
 import { EntityState } from "@reduxjs/toolkit";
-import { InferSelectModel } from "drizzle-orm";
 
-export type Task = InferSelectModel<typeof tasks>;
+export type Task = DBTask;
 
 export type TaskId = Pick<Task, "id">["id"];
 

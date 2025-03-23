@@ -1,5 +1,3 @@
-"use client";
-
 import { Session } from "@/features/auth/model/types";
 import { apiSlice } from "@/shared/api/api-slice";
 

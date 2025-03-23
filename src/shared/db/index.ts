@@ -1,9 +1,9 @@
-import * as schema from "./schema";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import { PrismaClient } from "@prisma/client";
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+const prisma = new PrismaClient();
 
-export const db = drizzle(pool, { schema, casing: "snake_case" });
+const globalForPrisma = global as unknown as { prisma: typeof prisma };
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+export { prisma as db };

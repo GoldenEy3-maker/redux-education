@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String  @id @default(cuid())
+  email          String  @unique
+  name           String  @db.VarChar(256)
+  surname        String  @db.VarChar(256)
+  patronymic     String? @db.VarChar(256)
+  password       String  @db.Text
+  tokenVersion   Int     @default(0) @map("token_version")
+  teamsAsMemeber Team[]  @relation(name: "members")
+  teamsAsAuthor  Team[]  @relation(name: "author")
+
+  @@index([email])
+  @@map("users")
+}
+
+model Task {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(256)
+  description String?  @db.Text
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([title])
+  @@map("tasks")
+}
+
+model Team {
+  id       String    @id @default(cuid())
+  name     String    @db.VarChar(256)
+  authorId String
+  author   User      @relation(name: "author", fields: [authorId], references: [id])
+  members  User[]    @relation(name: "members")
+  projects Project[]
+
+  @@index([name])
+  @@map("teams")
+}
+
+model Project {
+  id          String  @id @default(cuid())
+  title       String  @db.VarChar(256)
+  description String? @db.Text
+  teams       Team[]
+  tasks       Task[]
+
+  @@index([title])
+  @@map("projects")
+}

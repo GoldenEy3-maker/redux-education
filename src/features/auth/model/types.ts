@@ -1,5 +1,4 @@
-import { users } from "../../../shared/db/schema";
-import { InferSelectModel } from "drizzle-orm";
+import { User as DBUser } from "@prisma/client";
 
-export type User = InferSelectModel<typeof users>;
-export type Session = Omit<User, "password">;
+export type User = DBUser;
+export type Session = Omit<User, "password" | "tokenVersion">;

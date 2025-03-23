@@ -1,44 +1,66 @@
 import { db } from "@/shared/db";
-import { tokenService } from "@/shared/server/services/token-service";
+import { tokenService } from "@/shared/services/token-service";
 import { cookies } from "next/headers";
 
 export async function GET() {
-  // const cookiesList = await cookies();
-  // const refreshTokenCookie = cookiesList.get("refresh");
+  const cookiesStore = await cookies();
+  const refreshTokenCookie = cookiesStore.get("refresh");
 
-  // if (!refreshTokenCookie || typeof refreshTokenCookie !== "string")
-  //   return new Response("Unauthorized", {
-  //     status: 401,
-  //   });
+  if (!refreshTokenCookie)
+    return new Response("TokenNotDefined", {
+      status: 401,
+    });
 
-  // const refreshTokenPayload =
-  //   await tokenService.verifyRefreshToken(refreshTokenCookie);
+  const refreshTokenPayload = await tokenService.verifyRefreshToken(
+    refreshTokenCookie.value,
+  );
 
-  // if (!refreshTokenPayload)
-  //   return new Response("Unauthorized", {
-  //     status: 401,
-  //   });
+  if (!refreshTokenPayload)
+    return new Response("TokenNotValid", {
+      status: 401,
+    });
 
-  // const { id, remember, tokenVersion } = refreshTokenPayload;
+  const {
+    id,
+    remember,
+    tokenVersion: recievedTokenVersion,
+  } = refreshTokenPayload;
 
-  // const user = await db.query.users.findFirst({
-  //   where: (users, { eq }) => eq(users.id, id),
-  // });
+  const user = await db.user.findFirst({
+    where: {
+      id,
+    },
+  });
 
-  // if (!user)
-  //   return new Response("Unauthorized", {
-  //     status: 401,
-  //   });
+  if (!user)
+    return new Response("UserByTokenNotFound", {
+      status: 401,
+    });
 
-  // if (user.tokenVersion !== tokenVersion)
-  //   return new Response("Unauthorized", {
-  //     status: 401,
-  //   });
+  const { tokenVersion: currentUserTokenVersion, password, ...session } = user;
 
-  // const { accessToken, refreshToken } = await tokenService.generateTokens({
-  //   ...user,
-  //   remember,
-  // });
+  if (currentUserTokenVersion !== recievedTokenVersion)
+    return new Response("UserTokenVersionNotMatch", {
+      status: 401,
+    });
 
-  return Response.json({ token: "123" });
+  const { accessToken, refreshToken } = await tokenService.generateTokens({
+    ...user,
+    remember,
+  });
+
+  cookiesStore.set("refresh", refreshToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "none",
+    path: "/",
+    maxAge: 1000 * 60 * 60 * 24 * 30,
+  });
+
+  return Response.json(
+    { token: accessToken, user: session },
+    {
+      headers: { "Set-Cookie": `refresh=${refreshToken}` },
+    },
+  );
 }

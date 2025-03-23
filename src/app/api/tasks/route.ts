@@ -1,7 +1,5 @@
 import { NewTask } from "@/entities/tasks";
 import { db } from "@/shared/db";
-import { tasks } from "@/shared/db/schema";
-import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { NextRequest } from "next/server";
 
@@ -12,20 +10,32 @@ export async function GET() {
     return new Response("Unauthorized", {
       status: 401,
     });
-  const tasks = await db.query.tasks.findMany();
+  const tasks = await db.task.findMany();
   return Response.json(tasks);
 }
 
 export async function POST(request: NextRequest) {
   const body = (await request.json()) as NewTask;
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  const task = await db.insert(tasks).values(body).returning();
+  console.log(body);
+  const task = await db.task.create({
+    data: body,
+  });
   return Response.json(task);
 }
 
 export async function DELETE(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const id = searchParams.get("id");
-  await db.delete(tasks).where(eq(tasks.id, parseInt(id!)));
+
+  if (!id)
+    return new Response("ID is undefined", {
+      status: 400,
+    });
+
+  await db.task.delete({
+    where: {
+      id,
+    },
+  });
   return Response.json(true);
 }

@@ -1,5 +1,3 @@
-"use client";
-
 import {
   BaseQueryApi,
   createApi,
@@ -56,6 +54,8 @@ async function baseQueryWithAuth(
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithAuth,
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   tagTypes: Object.values(ApiTagsMap),
   endpoints: () => ({}),
 });
