@@ -1,24 +1,19 @@
+import { ApiException } from "@/shared/api/api-exception";
 import { db } from "@/shared/db";
-import { tokenService } from "@/shared/services/token-service";
+import { tokenService } from "@/shared/lib/token-service";
 import { cookies } from "next/headers";
 
 export async function GET() {
   const cookiesStore = await cookies();
   const refreshTokenCookie = cookiesStore.get("refresh");
 
-  if (!refreshTokenCookie)
-    return new Response("TokenNotDefined", {
-      status: 401,
-    });
+  if (!refreshTokenCookie) return ApiException.Unauthorized("TokenNotDefined");
 
   const refreshTokenPayload = await tokenService.verifyRefreshToken(
     refreshTokenCookie.value,
   );
 
-  if (!refreshTokenPayload)
-    return new Response("TokenNotValid", {
-      status: 401,
-    });
+  if (!refreshTokenPayload) return ApiException.Unauthorized("TokenIsInvalid");
 
   const {
     id,
@@ -32,35 +27,27 @@ export async function GET() {
     },
   });
 
-  if (!user)
-    return new Response("UserByTokenNotFound", {
-      status: 401,
-    });
+  if (!user) return ApiException.Unauthorized("UserByTokenNotFound");
 
   const { tokenVersion: currentUserTokenVersion, password, ...session } = user;
 
   if (currentUserTokenVersion !== recievedTokenVersion)
-    return new Response("UserTokenVersionNotMatch", {
-      status: 401,
-    });
+    return ApiException.Unauthorized("UserTokenVersionNotMatch");
 
   const { accessToken, refreshToken } = await tokenService.generateTokens({
     ...user,
     remember,
   });
 
-  cookiesStore.set("refresh", refreshToken, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "none",
-    path: "/",
-    maxAge: 1000 * 60 * 60 * 24 * 30,
-  });
+  const responseRefreshTokenCookie = await tokenService.sendRefreshToken(
+    refreshToken,
+    remember,
+  );
 
   return Response.json(
     { token: accessToken, user: session },
     {
-      headers: { "Set-Cookie": `refresh=${refreshToken}` },
+      ...responseRefreshTokenCookie,
     },
   );
 }

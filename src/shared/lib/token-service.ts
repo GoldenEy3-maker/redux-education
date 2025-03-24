@@ -1,5 +1,6 @@
 import { env } from "@/env";
 import { SignJWT, jwtVerify } from "jose";
+import { cookies } from "next/headers";
 
 type AccessTokenPayload = {
   email: string;
@@ -55,10 +56,17 @@ class TokenService {
     }
   }
 
-  // async sendRefreshToken(token: string) {
-  //   const cookieList = await cookies()
+  async sendRefreshToken(token: string, remember: boolean) {
+    const cookiesStore = await cookies();
 
-  // }
+    return cookiesStore.set("refresh", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "none",
+      path: "/",
+      maxAge: remember ? 1000 * 60 * 60 * 24 * 30 : undefined,
+    });
+  }
 }
 
 export const tokenService = new TokenService();

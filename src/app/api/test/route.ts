@@ -1,9 +1,7 @@
 import { db } from "@/shared/db";
-import { tokenService } from "@/shared/services/token-service";
-import { cookies } from "next/headers";
+import { tokenService } from "@/shared/lib/token-service";
 
 export async function GET() {
-  const cookiesStore = await cookies();
   const TEST_EMAIL = "danil-danil-koroelv@bk.ru";
   const TEST_PASSWORD = "123";
   let id: string;
@@ -39,13 +37,10 @@ export async function GET() {
     tokenVersion,
   });
 
-  const responseRefreshCookie = cookiesStore.set({
-    name: "refresh",
-    value: refreshToken,
-    httpOnly: true,
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30,
-  });
+  const responseRefreshCookie = await tokenService.sendRefreshToken(
+    refreshToken,
+    true,
+  );
 
   return Response.json(
     { accessToken, refreshToken },
