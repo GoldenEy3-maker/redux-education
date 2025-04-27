@@ -4,8 +4,14 @@ import {
   FetchArgs,
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
-import { authSchema, logOut, setToken } from "@/features/auth/model/slice";
-import { ApiTagsMap } from "../constants/api-tags";
+import { authSchema, setToken } from "../auth/slice";
+import { API_TAGS_MAP } from "../constants/api-tags";
+
+const EXCLUDED_ROUTES = [
+  "/user/session/refresh",
+  "/user/login",
+  "/user/register",
+];
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "/api",
@@ -24,12 +30,16 @@ async function baseQueryWithAuth(
 ) {
   let result = await baseQuery(args, api, extraOptions);
 
+  if (EXCLUDED_ROUTES.includes(result.meta?.request.url ?? "")) {
+    return result;
+  }
+
   if (
     result?.error?.status === "PARSING_ERROR" &&
     result.error.originalStatus === 401
   ) {
     const refreshResult = await baseQuery(
-      "/session/refresh",
+      "/user/session/refresh",
       api,
       extraOptions,
     );
@@ -41,10 +51,10 @@ async function baseQueryWithAuth(
         result = await baseQuery(args, api, extraOptions);
       } catch (error) {
         console.error(error);
-        api.dispatch(logOut());
+        api.dispatch(setToken(null));
       }
     } else {
-      api.dispatch(logOut());
+      api.dispatch(setToken(null));
     }
   }
 
@@ -56,6 +66,6 @@ export const apiSlice = createApi({
   baseQuery: baseQueryWithAuth,
   refetchOnFocus: true,
   refetchOnReconnect: true,
-  tagTypes: Object.values(ApiTagsMap),
+  tagTypes: Object.values(API_TAGS_MAP),
   endpoints: () => ({}),
 });

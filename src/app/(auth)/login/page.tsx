@@ -1,7 +1,10 @@
+import { LoginForm } from "@/features/login-form";
+
 export default function AuthPage() {
   return (
-    <main>
-      <h1>Auth Page</h1>
-    </main>
+    <>
+      <h1 className="text-2xl font-bold">Авторизация</h1>
+      <LoginForm />
+    </>
   );
 }

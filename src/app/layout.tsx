@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Providers } from "./providers";
 import { cn } from "@/shared/lib/utils";
+import { Toaster } from "sonner";
 
 import "./globals.css";
 
@@ -28,6 +29,7 @@ export default function RootLayout({
       >
         <Providers>
           <div className="flex min-h-svh flex-col">{children}</div>
+          <Toaster richColors position="top-right" />
         </Providers>
       </body>
     </html>
