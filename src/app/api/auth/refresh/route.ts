@@ -1,17 +1,20 @@
 import { ApiException } from "@/shared/api/api-exception";
 import { db } from "@/shared/db";
 import { tokenService } from "@/shared/services/token";
-import { cookies } from "next/headers";
+import { headers } from "next/headers";
 
 export async function GET() {
-  const cookiesStore = await cookies();
-  const refreshTokenCookie = cookiesStore.get("refresh");
+  // const refreshTokenCookie = cookiesStore.get("refresh");
+  // console.log("refresh", request.cookies.get("refresh"));
 
-  if (!refreshTokenCookie) return ApiException.Unauthorized("TokenNotDefined");
+  // console.log("refreshTokenCookie", refreshTokenCookie);
+  const headerStore = await headers();
+  const headerRefreshToken = headerStore.get("x-refresh-token");
 
-  const refreshTokenPayload = await tokenService.verifyRefreshToken(
-    refreshTokenCookie.value,
-  );
+  if (!headerRefreshToken) return ApiException.Unauthorized("TokenNotDefined");
+
+  const refreshTokenPayload =
+    await tokenService.verifyRefreshToken(headerRefreshToken);
 
   if (!refreshTokenPayload) return ApiException.Unauthorized("TokenIsInvalid");
 
@@ -41,5 +44,7 @@ export async function GET() {
 
   await tokenService.sendRefreshToken(refreshToken, remember);
 
-  return Response.json({ token: accessToken });
+  // cookiesStore.set("accessToken", accessToken);
+
+  return Response.json({ accessToken });
 }
