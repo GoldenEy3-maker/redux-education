@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     remember: true,
   });
 
-  await tokenService.sendRefreshToken(refreshToken, true);
+  // await tokenService.sendRefreshToken(refreshToken, true);
 
-  return Response.json({ token: accessToken, user });
+  return Response.json({ accessToken, refreshToken, userInfo: user });
 }

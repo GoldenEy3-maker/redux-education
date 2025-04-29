@@ -1,11 +1,9 @@
 "use client";
 
-import { useSession } from "@/shared/auth/context";
+import { useSession } from "next-auth/react";
 
 export function SomeClientComp() {
-  const { session, status } = useSession();
-
+  const { data: session, status } = useSession();
   if (status === "loading") return <div>Loading...</div>;
-
   return <div>{session?.user?.email}</div>;
 }

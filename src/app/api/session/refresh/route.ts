@@ -9,7 +9,7 @@ export async function GET() {
 
   // console.log("refreshTokenCookie", refreshTokenCookie);
   const headerStore = await headers();
-  const headerRefreshToken = headerStore.get("x-refresh-token");
+  const headerRefreshToken = headerStore.get("Authorization")?.split(" ")[1];
 
   if (!headerRefreshToken) return ApiException.Unauthorized("TokenNotDefined");
 
@@ -42,9 +42,7 @@ export async function GET() {
     remember,
   });
 
-  await tokenService.sendRefreshToken(refreshToken, remember);
+  // await tokenService.sendRefreshToken(refreshToken, remember);
 
-  // cookiesStore.set("accessToken", accessToken);
-
-  return Response.json({ accessToken });
+  return Response.json({ accessToken, refreshToken });
 }

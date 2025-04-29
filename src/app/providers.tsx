@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@/features/theming";
 import { StoreProvider } from "./store";
-import { SessionProvider } from "@/shared/auth/context";
+import { SessionProvider } from "next-auth/react";
 
 export function Providers({ children }: React.PropsWithChildren) {
   return (

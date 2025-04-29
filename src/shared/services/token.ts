@@ -20,7 +20,7 @@ class TokenService {
 
     const accessToken = await new SignJWT({ id })
       .setProtectedHeader({ alg: "HS256" })
-      .setExpirationTime("15m")
+      .setExpirationTime("60s")
       .sign(new TextEncoder().encode(env.ACCESS_TOKEN_SECRET));
     const refreshToken = await new SignJWT({ id, tokenVersion, remember })
       .setProtectedHeader({ alg: "HS256" })
