@@ -5,6 +5,7 @@ import { CreateTeamFormSchema } from "../model/create-team-form-schema";
 import { createTeamFormSchema } from "../model/create-team-form-schema";
 import { useCreateTeamMutation } from "../api/api-slice";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 export function useCreateTeamForm() {
   const form = useForm<CreateTeamFormSchema>({
@@ -14,12 +15,16 @@ export function useCreateTeamForm() {
     },
   });
 
+  const { data: session } = useSession();
+
   const [createTeam, { isLoading, error: mutationError }] =
     useCreateTeamMutation();
 
   async function onSubmit(data: CreateTeamFormSchema) {
+    if (!session?.user.id) return;
+
     try {
-      await createTeam(data);
+      await createTeam({ ...data, authorId: session?.user.id });
       toast.success("Команда успешно создана");
       form.reset();
     } catch (_error) {

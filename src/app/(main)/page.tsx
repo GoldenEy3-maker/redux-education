@@ -1,5 +1,6 @@
-import { SomeClientComp } from "./some-client-comp";
+// import { SomeClientComp } from "./some-client-comp";
 import Link from "next/link";
+import { SomeClientComp } from "./some-client-comp";
 
 export default async function Home() {
   return (

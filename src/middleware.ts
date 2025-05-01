@@ -16,11 +16,10 @@ export default async function middleware(req: NextRequest) {
     (PUBLIC_ROUTES.find((route) => nextUrl.pathname.startsWith(route)) ||
       nextUrl.pathname === "/") &&
     !PROTECTED_ROUTES.find((route) => nextUrl.pathname.includes(route));
-
   if (!isAuthenticated && !isPublicRoute)
     return Response.redirect(new URL(ROUTES_MAP.Login, nextUrl));
 }
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

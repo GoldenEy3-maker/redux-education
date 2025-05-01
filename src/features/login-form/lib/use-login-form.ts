@@ -32,11 +32,12 @@ export function useLoginForm() {
         ...data,
         redirect: false,
       });
-      console.log(response);
       if (response.ok && !response.error) {
         toast.success("Вы успешно авторизовались");
         form.reset();
         router.push(ROUTES_MAP.Home);
+      } else if (response.error) {
+        toast.error("Не удалось авторизоваться");
       }
     } catch (_error) {
       toast.error("Не удалось авторизоваться");

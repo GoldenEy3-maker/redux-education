@@ -1,11 +1,12 @@
 import { createTeamFormSchema } from "@/entities/team";
+import { auth } from "@/features/auth";
 import { ApiException } from "@/shared/api/api-exception";
-import { getApiSession } from "@/shared/auth/get-api-session";
 import { db } from "@/shared/db";
 import { ZodError } from "zod";
 
 export async function POST(request: Request) {
-  const session = await getApiSession();
+  const session = await auth();
+
   if (!session) return ApiException.Unauthorized();
 
   const body = await request.json();
@@ -16,7 +17,7 @@ export async function POST(request: Request) {
     const team = await db.team.create({
       data: {
         name,
-        authorId: session.id,
+        authorId: session?.user.id,
       },
     });
 
@@ -30,12 +31,13 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  const session = await getApiSession();
+  const session = await auth();
+
   if (!session) return ApiException.Unauthorized();
 
   const teams = await db.team.findMany({
     where: {
-      authorId: session.id,
+      authorId: session.user.id,
     },
   });
 

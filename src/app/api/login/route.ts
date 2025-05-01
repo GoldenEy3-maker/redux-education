@@ -4,22 +4,22 @@ import { passwordService } from "@/shared/services/password";
 import { tokenService } from "@/shared/services/token";
 
 export async function POST(request: Request) {
-  const { email, password } = await request.json();
+  const body = await request.json();
   const user = await db.user.findUnique({
-    where: { email },
+    where: { email: body.email },
   });
 
   if (!user) {
-    return ApiException.Unauthorized("Неверный email или пароль");
+    return ApiException.BadRequest("Неверный email или пароль");
   }
 
   const isPasswordValid = passwordService.verifyPassword(
-    password,
+    body.password,
     user.password,
   );
 
   if (!isPasswordValid) {
-    return ApiException.Unauthorized("Неверный email или пароль");
+    return ApiException.BadRequest("Неверный email или пароль");
   }
 
   const { accessToken, refreshToken } = await tokenService.generateTokens({
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     remember: true,
   });
 
-  // await tokenService.sendRefreshToken(refreshToken, true);
+  const { password, tokenVersion, ...userInfo } = user;
 
-  return Response.json({ accessToken, refreshToken, userInfo: user });
+  return Response.json({ accessToken, refreshToken, userInfo });
 }

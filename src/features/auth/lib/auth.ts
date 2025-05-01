@@ -1,9 +1,33 @@
-import NextAuth from "next-auth";
+import NextAuth, { Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { jwtDecode } from "jwt-decode";
 import { authConfig } from "../config/auth-config";
+import { JWT } from "next-auth/jwt";
+import { User as EntityUser } from "@/entities/user";
+declare module "next-auth" {
+  interface User extends EntityUser {
+    accessToken: string;
+    refreshToken: string;
+    id: string;
+    email: string;
+    name: string;
+  }
+  interface Session {
+    user: EntityUser;
+    accessToken: string;
+  }
+}
 
-async function refreshAccessToken(token) {
+declare module "next-auth/jwt" {
+  interface JWT {
+    accessToken: string;
+    refreshToken: string;
+    accessTokenExpires: number;
+    user: EntityUser;
+  }
+}
+
+async function refreshAccessToken(token: JWT) {
   try {
     const response = await fetch("http://localhost:3000/api/session/refresh", {
       headers: {
@@ -12,10 +36,13 @@ async function refreshAccessToken(token) {
     });
 
     if (!response.ok) {
-      throw new Error("RefreshAccessTokenError");
+      return null;
     }
 
-    const tokens = await response.json();
+    const tokens = (await response.json()) as {
+      accessToken: string;
+      refreshToken: string;
+    };
 
     return {
       ...token,
@@ -24,11 +51,7 @@ async function refreshAccessToken(token) {
     };
   } catch (error) {
     console.log(error);
-
-    return {
-      ...token,
-      error: "RefreshAccessTokenError",
-    };
+    return null;
   }
 }
 
@@ -60,29 +83,24 @@ export const {
           });
 
           if (!res.ok) {
-            // credentials are invalid
             return null;
           }
 
-          const parsedResponse = await res.json();
+          const parsedResponse = (await res.json()) as JWT & {
+            userInfo: Session["user"];
+          };
 
-          // accessing the accessToken returned by server
           const accessToken = parsedResponse.accessToken;
           const refreshToken = parsedResponse.refreshToken;
-          const userInfo = parsedResponse?.userInfo;
+          const userInfo = parsedResponse.userInfo;
 
           // You can make more request to get other information about the user eg. Profile details
 
-          // return user credentials together with accessToken
-
-          const value = {
+          return {
             accessToken,
             refreshToken,
-            role: userInfo?.role,
-            email: userInfo?.email,
+            ...userInfo,
           };
-
-          return value;
         } catch (e) {
           console.error(e);
           return null;
@@ -94,7 +112,9 @@ export const {
     jwt: async ({ token, user }) => {
       if (token.accessToken) {
         const decodedToken = jwtDecode(token.accessToken);
-        token.accessTokenExpires = decodedToken?.exp * 1000;
+        token.accessTokenExpires = decodedToken?.exp
+          ? decodedToken.exp * 1000
+          : 0;
       }
 
       if (user) {
@@ -102,22 +122,40 @@ export const {
           ...token,
           accessToken: user.accessToken,
           refreshToken: user.refreshToken,
-          user,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            surname: user.surname,
+            patronymic: user.patronymic,
+          },
         };
       }
 
       if (Date.now() < token.accessTokenExpires) {
-        console.log("token is still valid");
         return token;
       }
 
-      console.log("token is expired, refreshing...");
+      const refreshedToken = await refreshAccessToken(token);
 
-      return refreshAccessToken(token);
+      if (!refreshedToken) {
+        return null;
+      }
+
+      return refreshedToken;
     },
     session: async ({ session, token }) => {
+      // If token is null (refresh failed), return session without user
+      if (!token) {
+        return {
+          ...session,
+          user: undefined,
+        };
+      }
+
       if (token) {
         session.accessToken = token.accessToken;
+        // @ts-expect-error emailVerified is not in the user
         session.user = token.user;
       }
       return session;
