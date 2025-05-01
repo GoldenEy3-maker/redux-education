@@ -4,6 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import { authConfig } from "../config/auth-config";
 import { JWT } from "next-auth/jwt";
 import { User as EntityUser } from "@/entities/user";
+
 declare module "next-auth" {
   interface User extends EntityUser {
     accessToken: string;
@@ -15,6 +16,7 @@ declare module "next-auth" {
   interface Session {
     user: EntityUser;
     accessToken: string;
+    refreshToken: string;
   }
 }
 
@@ -29,7 +31,7 @@ declare module "next-auth/jwt" {
 
 async function refreshAccessToken(token: JWT) {
   try {
-    const response = await fetch("http://localhost:3000/api/session/refresh", {
+    const response = await fetch("http://localhost:3000/api/auth/refresh", {
       headers: {
         Authorization: `Bearer ${token.refreshToken}`,
       },
@@ -155,6 +157,7 @@ export const {
 
       if (token) {
         session.accessToken = token.accessToken;
+        session.refreshToken = token.refreshToken;
         // @ts-expect-error emailVerified is not in the user
         session.user = token.user;
       }

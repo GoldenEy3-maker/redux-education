@@ -1,7 +1,7 @@
 import "server-only";
 
 import { env } from "@/env";
-import { SignJWT, jwtVerify } from "jose";
+import { JWTPayload, SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
 interface AccessTokenPayload {
@@ -30,7 +30,9 @@ class TokenService {
     return { accessToken, refreshToken };
   }
 
-  async verifyAccessToken(token: string): Promise<AccessTokenPayload | null> {
+  async verifyAccessToken(
+    token: string,
+  ): Promise<(AccessTokenPayload & JWTPayload) | null> {
     try {
       const { payload } = await jwtVerify<AccessTokenPayload>(
         token,

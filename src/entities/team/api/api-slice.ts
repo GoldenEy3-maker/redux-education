@@ -1,7 +1,7 @@
 import { apiSlice } from "@/shared/api/api-slice";
 import { CreateTeamFormSchema } from "../model/create-team-form-schema";
 import { teamAdapter } from "../config/adapter";
-import { EntityTeam, Team } from "../model/types";
+import { EntityTeam, Team, TeamId } from "../model/types";
 
 export const initialState = teamAdapter.getInitialState();
 
@@ -41,6 +41,27 @@ export const teamApiSlice = apiSlice.injectEndpoints({
         }
       },
     }),
+    deleteTeam: builder.mutation<void, TeamId>({
+      query: (id) => ({
+        url: `/team/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Team"],
+      onQueryStarted: async (teamId, { queryFulfilled, dispatch }) => {
+        const getTeamsPatchResult = dispatch(
+          teamApiSlice.util.updateQueryData("getTeams", undefined, (draft) => {
+            draft.ids = draft.ids.filter((id) => id !== teamId);
+          }),
+        );
+
+        try {
+          await queryFulfilled;
+        } catch (error) {
+          console.error(error);
+          getTeamsPatchResult.undo();
+        }
+      },
+    }),
     getTeams: builder.query<EntityTeam, void>({
       query: () => "/team",
       providesTags: ["Team"],
@@ -49,4 +70,8 @@ export const teamApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useCreateTeamMutation, useGetTeamsQuery } = teamApiSlice;
+export const {
+  useCreateTeamMutation,
+  useGetTeamsQuery,
+  useDeleteTeamMutation,
+} = teamApiSlice;

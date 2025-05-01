@@ -4,8 +4,9 @@ import {
   registerFormSchema,
   RegisterFormSchema,
 } from "../model/register-form-schema";
-import { useRegisterMutation } from "@/shared/auth/api-slice";
 import { toast } from "sonner";
+import { register } from "../actions/register";
+import { useTransition } from "react";
 
 export function useRegisterForm() {
   const form = useForm<RegisterFormSchema>({
@@ -17,19 +18,24 @@ export function useRegisterForm() {
     },
   });
 
-  const [register, { isLoading, error: mutationError }] = useRegisterMutation();
+  const [isPending, startTransition] = useTransition();
 
-  async function onSubmit(data: RegisterFormSchema) {
-    try {
-      await register(data).unwrap();
-      toast.success("Вы успешно зарегистрировались");
-      form.reset();
-    } catch (_error) {
-      if (mutationError && "status" in mutationError) {
-        toast.error(mutationError.data as string);
+  function onSubmit(data: RegisterFormSchema) {
+    startTransition(async () => {
+      try {
+        const { success, error } = await register(data);
+        if (success) {
+          toast.success("Вы успешно зарегистрировались");
+          form.reset();
+        }
+        if (error) {
+          toast.error(error);
+        }
+      } catch (error) {
+        console.error(error);
       }
-    }
+    });
   }
 
-  return { form, onSubmit: form.handleSubmit(onSubmit), isLoading };
+  return { form, onSubmit: form.handleSubmit(onSubmit), isLoading: isPending };
 }

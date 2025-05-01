@@ -23,6 +23,10 @@ export function CreateTeamDialogDrawer() {
   const [open, setOpen] = useState(false);
   const isLaptop = useMediaQuery("(max-width: 768px)");
 
+  function onSuccessCreateTeam() {
+    setOpen(false);
+  }
+
   if (isLaptop) {
     return (
       <Drawer open={open} onOpenChange={setOpen}>
@@ -34,7 +38,7 @@ export function CreateTeamDialogDrawer() {
             <DrawerTitle className="text-2xl">Новая команда</DrawerTitle>
           </DrawerHeader>
           <div className="p-4">
-            <CreateTeamForm />
+            <CreateTeamForm onSuccess={onSuccessCreateTeam} />
           </div>
         </DrawerContent>
       </Drawer>
@@ -49,7 +53,7 @@ export function CreateTeamDialogDrawer() {
         <DialogHeader>
           <DialogTitle className="text-2xl">Новая команда</DialogTitle>
         </DialogHeader>
-        <CreateTeamForm />
+        <CreateTeamForm onSuccess={onSuccessCreateTeam} />
       </DialogContent>
     </Dialog>
   );

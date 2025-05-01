@@ -7,4 +7,7 @@ export class ApiException extends Response {
   static BadRequest(message?: string) {
     return new ApiException(message ?? "Bad Request", { status: 400 });
   }
+  static NotFound(message?: string) {
+    return new ApiException(message ?? "Not Found", { status: 404 });
+  }
 }

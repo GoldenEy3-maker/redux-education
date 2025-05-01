@@ -4,21 +4,16 @@ import {
   FetchArgs,
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
-import { authSchema, setToken } from "../auth/slice";
 import { API_TAGS_MAP } from "../constants/api-tags";
-
-const EXCLUDED_ROUTES = [
-  "/user/session/refresh",
-  "/user/login",
-  "/user/register",
-];
+import { getSession, signOut } from "next-auth/react";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "/api",
   credentials: "include",
-  prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as RootState).auth.token;
-    if (token) headers.set("Authorization", `Bearer ${token}`);
+  prepareHeaders: async (headers) => {
+    const session = await getSession();
+    if (session?.accessToken)
+      headers.set("Authorization", `Bearer ${session.accessToken}`);
     return headers;
   },
 });
@@ -30,31 +25,22 @@ async function baseQueryWithAuth(
 ) {
   let result = await baseQuery(args, api, extraOptions);
 
-  if (EXCLUDED_ROUTES.includes(result.meta?.request.url ?? "")) {
-    return result;
-  }
-
   if (
     result?.error?.status === "PARSING_ERROR" &&
     result.error.originalStatus === 401
   ) {
-    const refreshResult = await baseQuery(
-      "/user/session/refresh",
-      api,
-      extraOptions,
-    );
+    try {
+      // Try to repeat the request with session refresh rotation
+      result = await baseQuery(args, api, extraOptions);
 
-    if (refreshResult.data) {
-      try {
-        const { token } = authSchema.parse(refreshResult.data);
-        api.dispatch(setToken(token));
-        result = await baseQuery(args, api, extraOptions);
-      } catch (error) {
-        console.error(error);
-        api.dispatch(setToken(null));
-      }
-    } else {
-      api.dispatch(setToken(null));
+      if (
+        result.error?.status === "PARSING_ERROR" &&
+        result.error.originalStatus === 401
+      )
+        signOut({ redirect: true });
+    } catch (error) {
+      console.error(error);
+      signOut({ redirect: true });
     }
   }
 

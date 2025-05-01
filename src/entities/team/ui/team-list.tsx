@@ -4,7 +4,7 @@ import { useGetTeamsQuery } from "../api/api-slice";
 import { TeamCard } from "./team-card";
 
 export function TeamList() {
-  const { data: teams, isLoading } = useGetTeamsQuery();
+  const { data: teams, isLoading } = useGetTeamsQuery(undefined);
 
   if (isLoading) return <div>Loading...</div>;
 

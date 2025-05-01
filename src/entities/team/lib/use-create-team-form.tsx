@@ -7,7 +7,11 @@ import { useCreateTeamMutation } from "../api/api-slice";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 
-export function useCreateTeamForm() {
+interface UseCreateTeamFormParams {
+  onSuccess?: () => void;
+}
+
+export function useCreateTeamForm(params?: UseCreateTeamFormParams) {
   const form = useForm<CreateTeamFormSchema>({
     resolver: zodResolver(createTeamFormSchema),
     defaultValues: {
@@ -27,6 +31,7 @@ export function useCreateTeamForm() {
       await createTeam({ ...data, authorId: session?.user.id });
       toast.success("Команда успешно создана");
       form.reset();
+      params?.onSuccess?.();
     } catch (_error) {
       if (mutationError && "status" in mutationError) {
         toast.error(mutationError.data as string);

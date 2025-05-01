@@ -12,8 +12,12 @@ import { useCreateTeamForm } from "../lib/use-create-team-form";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
 
-export function CreateTeamForm() {
-  const { form, isLoading, onSubmit } = useCreateTeamForm();
+interface CreateTeamFormProps {
+  onSuccess?: () => void;
+}
+
+export function CreateTeamForm({ onSuccess }: CreateTeamFormProps) {
+  const { form, isLoading, onSubmit } = useCreateTeamForm({ onSuccess });
 
   return (
     <Form {...form}>

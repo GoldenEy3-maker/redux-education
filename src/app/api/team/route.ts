@@ -1,28 +1,29 @@
 import { createTeamFormSchema } from "@/entities/team";
-import { auth } from "@/features/auth";
 import { ApiException } from "@/shared/api/api-exception";
-import { db } from "@/shared/db";
 import { ZodError } from "zod";
+import { db } from "@/shared/db";
+import { protectedRoute } from "@/shared/lib/protected-route";
 
 export async function POST(request: Request) {
-  const session = await auth();
-
-  if (!session) return ApiException.Unauthorized();
-
-  const body = await request.json();
-
   try {
+    const payload = await protectedRoute(request);
+    const body = await request.json();
+
     const { name } = createTeamFormSchema.parse(body);
 
     const team = await db.team.create({
       data: {
         name,
-        authorId: session?.user.id,
+        authorId: payload.id,
       },
     });
 
     return Response.json({ team });
   } catch (error) {
+    if (error instanceof ApiException) {
+      return error;
+    }
+
     if (error instanceof ZodError) {
       return ApiException.BadRequest(error.message);
     }
@@ -30,16 +31,21 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
-  const session = await auth();
+export async function GET(request: Request) {
+  try {
+    const payload = await protectedRoute(request);
 
-  if (!session) return ApiException.Unauthorized();
+    const teams = await db.team.findMany({
+      where: {
+        authorId: payload.id,
+      },
+    });
 
-  const teams = await db.team.findMany({
-    where: {
-      authorId: session.user.id,
-    },
-  });
-
-  return Response.json(teams);
+    return Response.json(teams);
+  } catch (error) {
+    if (error instanceof ApiException) {
+      return error;
+    }
+    return ApiException.BadRequest();
+  }
 }
