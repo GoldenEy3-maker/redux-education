@@ -33,11 +33,15 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    const payload = await protectedRoute(request);
+    await protectedRoute(request);
 
     const teams = await db.team.findMany({
-      where: {
-        authorId: payload.id,
+      include: {
+        members: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
 

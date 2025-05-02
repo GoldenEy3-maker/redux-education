@@ -18,6 +18,7 @@ import {
 import { useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { CreateTeamForm } from "./create-team-form";
+import { Plus } from "lucide-react";
 
 export function CreateTeamDialogDrawer() {
   const [open, setOpen] = useState(false);
@@ -31,7 +32,13 @@ export function CreateTeamDialogDrawer() {
     return (
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
-          <Button variant="outline">Создать команду</Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-full border-dashed"
+          >
+            <Plus />
+          </Button>
         </DrawerTrigger>
         <DrawerContent>
           <DrawerHeader>
@@ -47,7 +54,13 @@ export function CreateTeamDialogDrawer() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Создать команду</Button>
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-full border-dashed"
+        >
+          <Plus />
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

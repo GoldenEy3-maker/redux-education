@@ -5,3 +5,5 @@ export interface User {
   surname: string;
   patronymic: string | null;
 }
+
+export type UserId = User["id"];

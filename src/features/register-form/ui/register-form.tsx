@@ -63,6 +63,7 @@ export function RegisterForm() {
           )}
         />
         <FormField
+          control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>

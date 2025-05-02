@@ -28,7 +28,7 @@ export function useCreateTeamForm(params?: UseCreateTeamFormParams) {
     if (!session?.user.id) return;
 
     try {
-      await createTeam({ ...data, authorId: session?.user.id });
+      await createTeam(data);
       toast.success("Команда успешно создана");
       form.reset();
       params?.onSuccess?.();
