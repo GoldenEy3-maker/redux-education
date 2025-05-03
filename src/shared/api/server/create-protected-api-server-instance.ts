@@ -11,12 +11,8 @@ export async function createProtectedApiServerInstance<Api>(
 ) {
   const session = await auth();
 
-  if (!session?.user) {
-    // return false;
-    // return await signOut({ redirect: true });
-    // throw new Error("Unauthorized");
-    redirect(ROUTES_MAP.Login);
-  }
+  // Using redirect insted of singOut caz it's not working in server components
+  if (!session?.user) redirect(ROUTES_MAP.Login);
 
   const apiService = new ApiService({
     ...config,

@@ -40,9 +40,7 @@ async function refreshAccessToken(token: JWT) {
       refreshToken: token.refreshToken,
     });
 
-    if (error) {
-      return null;
-    }
+    if (error) return null;
 
     return {
       ...token,
@@ -78,9 +76,7 @@ export const {
           const authApi = new AuthApi(apiService);
           const { data, error } = await authApi.login(parsedCredentials);
 
-          if (error) {
-            return null;
-          }
+          if (error) return null;
 
           const accessToken = data.accessToken;
           const refreshToken = data.refreshToken;
@@ -124,15 +120,11 @@ export const {
         };
       }
 
-      if (Date.now() < token.accessTokenExpires) {
-        return token;
-      }
+      if (Date.now() < token.accessTokenExpires) return token;
 
       const refreshedToken = await refreshAccessToken(token);
 
-      if (!refreshedToken) {
-        return null;
-      }
+      if (!refreshedToken) return null;
 
       return refreshedToken;
     },

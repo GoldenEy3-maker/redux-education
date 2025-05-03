@@ -7,9 +7,6 @@ export class AuthApi {
 
   async login(data: LoginFormSchema) {
     const response = await this.api.v1.login(data);
-    console.log("response", response);
-    console.log("data", response.data);
-    console.log("error", response.error);
     return { data: response.data, error: response.error };
   }
 
