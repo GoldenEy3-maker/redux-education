@@ -1,9 +1,5 @@
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  surname: string;
-  patronymic: string | null;
-}
+import { User as ApiUser } from "@/__generated__/Api";
+
+export interface User extends ApiUser {}
 
 export type UserId = User["id"];

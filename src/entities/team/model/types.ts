@@ -1,10 +1,5 @@
-import { Team as DBTeam, Prisma } from "@prisma/client";
-import { EntityState } from "@reduxjs/toolkit";
+import { Team as ApiTeam } from "@/__generated__/Api";
 
-export interface Team
-  extends DBTeam,
-    Prisma.TeamGetPayload<{ include: { members: { select: { id: true } } } }> {}
+export interface Team extends ApiTeam {}
 
 export type TeamId = Pick<Team, "id">["id"];
-
-export interface EntityTeam extends EntityState<Team, TeamId> {}

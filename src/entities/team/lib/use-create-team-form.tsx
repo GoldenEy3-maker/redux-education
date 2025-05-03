@@ -3,9 +3,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CreateTeamFormSchema } from "../model/create-team-form-schema";
 import { createTeamFormSchema } from "../model/create-team-form-schema";
-import { useCreateTeamMutation } from "../api/api-slice";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import { createTeamAction } from "../actions/create-team-action";
+import { useTransition } from "react";
 
 interface UseCreateTeamFormParams {
   onSuccess?: () => void;
@@ -21,23 +22,27 @@ export function useCreateTeamForm(params?: UseCreateTeamFormParams) {
 
   const { data: session } = useSession();
 
-  const [createTeam, { isLoading, error: mutationError }] =
-    useCreateTeamMutation();
+  const [isPending, startTransition] = useTransition();
 
-  async function onSubmit(data: CreateTeamFormSchema) {
+  function onSubmit(formData: CreateTeamFormSchema) {
     if (!session?.user.id) return;
 
-    try {
-      await createTeam(data);
-      toast.success("Команда успешно создана");
-      form.reset();
-      params?.onSuccess?.();
-    } catch (_error) {
-      if (mutationError && "status" in mutationError) {
-        toast.error(mutationError.data as string);
+    startTransition(async () => {
+      try {
+        const { error } = await createTeamAction(formData);
+        if (error) {
+          toast.error(error.message);
+        } else {
+          toast.success("Команда успешно создана");
+          form.reset();
+          params?.onSuccess?.();
+        }
+      } catch (_error) {
+        console.error(_error);
+        toast.error("Ошибка при создании команды");
       }
-    }
+    });
   }
 
-  return { form, isLoading, onSubmit: form.handleSubmit(onSubmit) };
+  return { form, isPending, onSubmit: form.handleSubmit(onSubmit) };
 }

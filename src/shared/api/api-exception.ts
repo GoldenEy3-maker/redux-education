@@ -2,12 +2,21 @@ import "server-only";
 
 export class ApiException extends Response {
   static Unauthorized(message?: string) {
-    return new ApiException(message ?? "Unauthorized", { status: 401 });
+    return ApiException.json(
+      { message: message ?? "Unauthorized" },
+      { status: 401 },
+    );
   }
   static BadRequest(message?: string) {
-    return new ApiException(message ?? "Bad Request", { status: 400 });
+    return ApiException.json(
+      { message: message ?? "Bad Request" },
+      { status: 400 },
+    );
   }
   static NotFound(message?: string) {
-    return new ApiException(message ?? "Not Found", { status: 404 });
+    return ApiException.json(
+      { message: message ?? "Not Found" },
+      { status: 404 },
+    );
   }
 }

@@ -2,9 +2,11 @@ import "server-only";
 
 import { tokenService } from "../services/token";
 import { ApiException } from "../api/api-exception";
+import { headers } from "next/headers";
 
-export async function protectedRoute(request: Request) {
-  const accessToken = request.headers.get("Authorization")?.split(" ")[1];
+export async function protectedRoute() {
+  const headersStore = await headers();
+  const accessToken = headersStore.get("Authorization")?.split(" ")[1];
   if (!accessToken) throw ApiException.Unauthorized();
 
   const payload = await tokenService.verifyAccessToken(accessToken);

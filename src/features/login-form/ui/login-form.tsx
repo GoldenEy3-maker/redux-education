@@ -15,7 +15,7 @@ import Link from "next/link";
 import { ROUTES_MAP } from "@/shared/constants/routes";
 
 export function LoginForm() {
-  const { form, onSubmit, isLoading } = useLoginForm();
+  const { form, onSubmit, isPending } = useLoginForm();
 
   return (
     <Form {...form}>
@@ -26,7 +26,7 @@ export function LoginForm() {
         <FormField
           control={form.control}
           name="email"
-          disabled={isLoading}
+          disabled={isPending}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
@@ -40,7 +40,7 @@ export function LoginForm() {
         <FormField
           control={form.control}
           name="password"
-          disabled={isLoading}
+          disabled={isPending}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Password</FormLabel>
@@ -51,8 +51,8 @@ export function LoginForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Загрузка..." : "Войти"}
+        <Button type="submit" className="w-full" disabled={isPending}>
+          {isPending ? "Загрузка..." : "Войти"}
         </Button>
         <Button asChild variant="link" className="w-full">
           <Link href={ROUTES_MAP.Register}>Еще нет аккаунта?</Link>

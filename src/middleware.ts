@@ -1,4 +1,4 @@
-import { authConfig } from "@/features/auth";
+import { authConfig } from "@/shared/auth";
 import NextAuth from "next-auth";
 import { NextRequest } from "next/server";
 import { ROUTES_MAP } from "./shared/constants/routes";

@@ -5,8 +5,8 @@ import {
   RegisterFormSchema,
 } from "../model/register-form-schema";
 import { toast } from "sonner";
-import { register } from "../actions/register";
 import { useTransition } from "react";
+import { registerAction } from "../actions/register-action";
 
 export function useRegisterForm() {
   const form = useForm<RegisterFormSchema>({
@@ -20,11 +20,11 @@ export function useRegisterForm() {
 
   const [isPending, startTransition] = useTransition();
 
-  function onSubmit(data: RegisterFormSchema) {
+  function onSubmit(formData: RegisterFormSchema) {
     startTransition(async () => {
       try {
-        const { success, error } = await register(data);
-        if (success) {
+        const { data, error } = await registerAction(formData);
+        if (data) {
           toast.success("Вы успешно зарегистрировались");
           form.reset();
         }
@@ -37,5 +37,5 @@ export function useRegisterForm() {
     });
   }
 
-  return { form, onSubmit: form.handleSubmit(onSubmit), isLoading: isPending };
+  return { form, onSubmit: form.handleSubmit(onSubmit), isPending };
 }

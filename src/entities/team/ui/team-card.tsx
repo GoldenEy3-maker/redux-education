@@ -6,12 +6,12 @@ import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import { ROUTES_MAP } from "@/shared/constants/routes";
 import { ArrowRightIcon, TrashIcon } from "lucide-react";
-import {
-  useDeleteTeamMutation,
-  useJoinTeamMutation,
-  useLeaveTeamMutation,
-} from "../api/api-slice";
+
 import { useSession } from "next-auth/react";
+import { leaveTeamAction } from "../actions/leave-team-action";
+import { useTransition } from "react";
+import { joinTeamAction } from "../actions/join-team-action";
+import { deleteTeamAction } from "../actions/delete-team-action";
 
 interface TeamCardProps extends Team {}
 
@@ -20,9 +20,9 @@ export function TeamCard({ name, id, members, authorId }: TeamCardProps) {
   const isAuthor = session?.user.id === authorId;
   const isMember = members.some((member) => member.id === session?.user.id);
 
-  const [deleteTeam, { isLoading: isDeleting }] = useDeleteTeamMutation();
-  const [joinTeam, { isLoading: isJoining }] = useJoinTeamMutation();
-  const [leaveTeam, { isLoading: isLeaving }] = useLeaveTeamMutation();
+  const [isLeaving, startLeavingTransition] = useTransition();
+  const [isJoining, startJoiningTransition] = useTransition();
+  const [isDeleting, startDeletingTransition] = useTransition();
 
   return (
     <Card>
@@ -40,7 +40,9 @@ export function TeamCard({ name, id, members, authorId }: TeamCardProps) {
           <Button
             variant="outline"
             onClick={() =>
-              leaveTeam({ teamId: id, userId: session?.user.id ?? "" })
+              startLeavingTransition(() => {
+                leaveTeamAction(id);
+              })
             }
             disabled={isLeaving}
           >
@@ -49,7 +51,9 @@ export function TeamCard({ name, id, members, authorId }: TeamCardProps) {
         ) : !isAuthor ? (
           <Button
             onClick={() =>
-              joinTeam({ teamId: id, userId: session?.user.id ?? "" })
+              startJoiningTransition(() => {
+                joinTeamAction(id);
+              })
             }
             disabled={isJoining}
           >
@@ -59,7 +63,11 @@ export function TeamCard({ name, id, members, authorId }: TeamCardProps) {
         {isAuthor && (
           <Button
             variant="destructive"
-            onClick={() => deleteTeam(id)}
+            onClick={() =>
+              startDeletingTransition(() => {
+                deleteTeamAction(id);
+              })
+            }
             disabled={isDeleting}
             size="icon"
           >

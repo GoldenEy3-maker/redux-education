@@ -17,7 +17,7 @@ interface CreateTeamFormProps {
 }
 
 export function CreateTeamForm({ onSuccess }: CreateTeamFormProps) {
-  const { form, isLoading, onSubmit } = useCreateTeamForm({ onSuccess });
+  const { form, isPending, onSubmit } = useCreateTeamForm({ onSuccess });
 
   return (
     <Form {...form}>
@@ -35,8 +35,8 @@ export function CreateTeamForm({ onSuccess }: CreateTeamFormProps) {
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Создание..." : "Создать"}
+        <Button type="submit" disabled={isPending}>
+          {isPending ? "Создание..." : "Создать"}
         </Button>
       </form>
     </Form>

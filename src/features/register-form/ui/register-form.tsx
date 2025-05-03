@@ -15,7 +15,7 @@ import Link from "next/link";
 import { ROUTES_MAP } from "@/shared/constants/routes";
 
 export function RegisterForm() {
-  const { form, onSubmit, isLoading } = useRegisterForm();
+  const { form, onSubmit, isPending } = useRegisterForm();
 
   return (
     <Form {...form}>
@@ -26,6 +26,7 @@ export function RegisterForm() {
         <FormField
           control={form.control}
           name="name"
+          disabled={isPending}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Имя</FormLabel>
@@ -39,6 +40,7 @@ export function RegisterForm() {
         <FormField
           control={form.control}
           name="surname"
+          disabled={isPending}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Фамилия</FormLabel>
@@ -52,6 +54,7 @@ export function RegisterForm() {
         <FormField
           control={form.control}
           name="patronymic"
+          disabled={isPending}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Отчество</FormLabel>
@@ -65,6 +68,7 @@ export function RegisterForm() {
         <FormField
           control={form.control}
           name="email"
+          disabled={isPending}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
@@ -78,6 +82,7 @@ export function RegisterForm() {
         <FormField
           control={form.control}
           name="password"
+          disabled={isPending}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Пароль</FormLabel>
@@ -91,6 +96,7 @@ export function RegisterForm() {
         <FormField
           control={form.control}
           name="confirmPassword"
+          disabled={isPending}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Подтвердите пароль</FormLabel>
@@ -102,8 +108,8 @@ export function RegisterForm() {
           )}
         />
 
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Загрузка..." : "Зарегистрироваться"}
+        <Button type="submit" disabled={isPending}>
+          {isPending ? "Загрузка..." : "Зарегистрироваться"}
         </Button>
         <Button variant="link" asChild>
           <Link href={ROUTES_MAP.Login}>Уже есть аккаунт?</Link>

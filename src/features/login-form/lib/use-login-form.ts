@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ROUTES_MAP } from "@/shared/constants/routes";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useTransition } from "react";
 
 export function useLoginForm() {
   const form = useForm<LoginFormSchema>({
@@ -19,32 +19,28 @@ export function useLoginForm() {
   });
 
   const router = useRouter();
-  // const { setSession } = useSession();
-  // const [login, { isLoading, error: mutationError }] = useLoginMutation();
-  const [isLoading, setIsLoading] = useState(false);
 
-  async function onSubmit(data: LoginFormSchema) {
-    setIsLoading(true);
+  const [isPending, startTransition] = useTransition();
 
-    try {
-      // const response = await login(data).unwrap();
-      const response = await signIn("credentials", {
-        ...data,
-        redirect: false,
-      });
-      if (response.ok && !response.error) {
-        toast.success("Вы успешно авторизовались");
-        form.reset();
-        router.push(ROUTES_MAP.Home);
-      } else if (response.error) {
+  function onSubmit(data: LoginFormSchema) {
+    startTransition(async () => {
+      try {
+        const response = await signIn("credentials", {
+          ...data,
+          redirect: false,
+        });
+        if (response.ok && !response.error) {
+          toast.success("Вы успешно авторизовались");
+          form.reset();
+          router.push(ROUTES_MAP.Home);
+        } else if (response.error) {
+          toast.error("Не удалось авторизоваться");
+        }
+      } catch (_error) {
         toast.error("Не удалось авторизоваться");
       }
-    } catch (_error) {
-      toast.error("Не удалось авторизоваться");
-    } finally {
-      setIsLoading(false);
-    }
+    });
   }
 
-  return { form, onSubmit: form.handleSubmit(onSubmit), isLoading };
+  return { form, onSubmit: form.handleSubmit(onSubmit), isPending };
 }
