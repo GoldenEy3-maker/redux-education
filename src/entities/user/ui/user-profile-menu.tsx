@@ -11,6 +11,7 @@ import {
 import { LogOut } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { UserEditProfileModalDrawer } from "./user-edit-profile-modal-drawer";
 
 export function UserProfileMenu() {
   const { data: session } = useSession();
@@ -29,10 +30,15 @@ export function UserProfileMenu() {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => signOut({ redirect: true })}>
-          <LogOut />
-          Выйти
+      <DropdownMenuContent align="end" className="space-y-1">
+        <DropdownMenuItem asChild>
+          <UserEditProfileModalDrawer />
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild onClick={() => signOut({ redirect: true })}>
+          <Button variant="ghost" className="w-full justify-start">
+            <LogOut />
+            Выйти
+          </Button>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

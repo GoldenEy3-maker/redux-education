@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardFooter, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Team } from "../model/types";
+import { Team, TeamId } from "../model/types";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import { ROUTES_MAP } from "@/shared/constants/routes";
@@ -12,10 +12,23 @@ import { leaveTeamAction } from "../actions/leave-team-action";
 import { useTransition } from "react";
 import { joinTeamAction } from "../actions/join-team-action";
 import { deleteTeamAction } from "../actions/delete-team-action";
+import { UserId } from "@/entities/user";
 
-interface TeamCardProps extends Team {}
+interface TeamCardProps extends Team {
+  beforeDelete?: (id: TeamId) => void;
+  beforeJoin?: (id: TeamId, userId: UserId) => void;
+  beforeLeave?: (id: TeamId, userId: UserId) => void;
+}
 
-export function TeamCard({ name, id, members, authorId }: TeamCardProps) {
+export function TeamCard({
+  name,
+  id,
+  members,
+  authorId,
+  beforeDelete,
+  beforeJoin,
+  beforeLeave,
+}: TeamCardProps) {
   const { data: session } = useSession();
   const isAuthor = session?.user.id === authorId;
   const isMember = members.some((member) => member.id === session?.user.id);
@@ -39,22 +52,28 @@ export function TeamCard({ name, id, members, authorId }: TeamCardProps) {
         {isMember ? (
           <Button
             variant="outline"
-            onClick={() =>
+            onClick={() => {
+              if (!session?.user) return;
+
               startLeavingTransition(() => {
+                beforeLeave?.(id, session.user.id);
                 leaveTeamAction(id);
-              })
-            }
+              });
+            }}
             disabled={isLeaving}
           >
             Выйти
           </Button>
         ) : !isAuthor ? (
           <Button
-            onClick={() =>
+            onClick={() => {
+              if (!session?.user) return;
+
               startJoiningTransition(() => {
+                beforeJoin?.(id, session.user.id);
                 joinTeamAction(id);
-              })
-            }
+              });
+            }}
             disabled={isJoining}
           >
             Вступить
@@ -63,11 +82,12 @@ export function TeamCard({ name, id, members, authorId }: TeamCardProps) {
         {isAuthor && (
           <Button
             variant="destructive"
-            onClick={() =>
+            onClick={() => {
               startDeletingTransition(() => {
+                beforeDelete?.(id);
                 deleteTeamAction(id);
-              })
-            }
+              });
+            }}
             disabled={isDeleting}
             size="icon"
           >

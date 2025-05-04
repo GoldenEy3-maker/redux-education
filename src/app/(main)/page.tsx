@@ -1,6 +1,12 @@
-import { CreateTeamDialogDrawer, TeamList } from "@/entities/team";
+import {
+  CreateTeamDialogDrawer,
+  getTeamsAction,
+  TeamList,
+} from "@/entities/team";
 
 export default async function Home() {
+  const teams = await getTeamsAction();
+
   return (
     <>
       <section className="mb-6">
@@ -8,7 +14,7 @@ export default async function Home() {
           <h2 className="text-2xl font-bold">Команды</h2>
           <CreateTeamDialogDrawer />
         </div>
-        <TeamList />
+        <TeamList teams={teams} />
       </section>
     </>
   );

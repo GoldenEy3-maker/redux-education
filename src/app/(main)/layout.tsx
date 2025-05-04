@@ -1,4 +1,4 @@
-import { AuthWatcher } from "@/shared/auth";
+import { AuthClientWatcher } from "@/shared/auth";
 import { Header } from "@/widgets/header";
 
 export default function MainLayout({
@@ -10,7 +10,7 @@ export default function MainLayout({
     <>
       <Header />
       <main className="container py-6">{children}</main>
-      <AuthWatcher />
+      <AuthClientWatcher />
     </>
   );
 }

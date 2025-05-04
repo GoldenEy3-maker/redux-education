@@ -97,7 +97,7 @@ export const {
     }),
   ],
   callbacks: {
-    jwt: async ({ token, user }) => {
+    jwt: async ({ token, user, trigger, session }) => {
       if (token.accessToken) {
         const decodedToken = jwtDecode(token.accessToken);
         token.accessTokenExpires = decodedToken?.exp
@@ -118,6 +118,11 @@ export const {
             patronymic: user.patronymic,
           },
         };
+      }
+
+      // Can be extended with any other user information
+      if (trigger === "update" && session.user) {
+        token.user = session.user;
       }
 
       if (Date.now() < token.accessTokenExpires) return token;

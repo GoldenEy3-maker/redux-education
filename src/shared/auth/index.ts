@@ -1,3 +1,3 @@
 export * from "./auth";
 export { authConfig } from "./auth-config";
-export { AuthWatcher } from "./auth-watcher";
+export { AuthClientWatcher } from "./auth-client-watcher";

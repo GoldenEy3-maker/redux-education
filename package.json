@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "bun run api:generate",
     "dev": "next dev --turbopack",
+    "prebuild": "bun run api:generate",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate-api": "node open-api/generate-api.js",
+    "api:generate": "node open-api/generate-api.js",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate"

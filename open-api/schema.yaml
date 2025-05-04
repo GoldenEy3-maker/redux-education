@@ -135,6 +135,44 @@ paths:
                 properties:
                   message:
                     type: string
+  /v1/user/update:
+    put:
+      operationId: updateUser
+      summary: Update user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - surname
+              properties:
+                name:
+                  type: string
+                surname:
+                  type: string
+                patronymic:
+                  type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /v1/teams:
     post:
       operationId: createTeam
